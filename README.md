@@ -26,7 +26,7 @@ Installation Instructions:
 ## Installation
 
 1. Clone the repository
-git clone https://github.com/yourusername/mental-health-hub.git
+git clone https://github.com/Sameerk99/mental-health-hub.git
 cd mental-health-hub
 
 2. Create a virtual environment

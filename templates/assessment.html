@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    {% if not assessment_type %}
+    <!-- Assessment Selection -->
+    <div class="card shadow">
+        <div class="card-body text-center">
+            <h1 class="mb-4">Choose Your Assessment</h1>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="card-title">PHQ-9</h3>
+                            <p class="card-text">Depression Assessment</p>
+                            <a href="{{ url_for('assessment', assessment_type='phq9') }}" 
+                               class="btn btn-primary">
+                                Start Assessment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="card-title">GAD-7</h3>
+                            <p class="card-text">Anxiety Assessment</p>
+                            <a href="{{ url_for('assessment', assessment_type='gad7') }}" 
+                               class="btn btn-primary">
+                                Start Assessment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Assessment Form -->
+    <div class="card shadow mt-4">
+        <div class="card-body">
+            <h1 class="mb-4">
+                {% if assessment_type == 'phq9' %}PHQ-9 Depression Assessment
+                {% else %}GAD-7 Anxiety Assessment{% endif %}
+            </h1>
+            
+            <form method="POST">                
+                {% for question in questions %}
+                <div class="mb-4">
+                    <label class="form-label fs-5">{{ question[1] }}</label>
+                    <select name="q{{ question[0] }}" class="form-select" required>
+                        <option value="0">Not at all</option>
+                        <option value="1">Several days</option>
+                        <option value="2">More than half the days</option>
+                        <option value="3">Nearly every day</option>
+                    </select>
+                </div>
+                {% endfor %}
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+                    <a href="{{ url_for('assessment') }}" class="btn btn-secondary">
+                        Back to Assessments
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

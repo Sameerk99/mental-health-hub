@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4 mb-4">Mood Tracker</h1>
+    
+    <!-- Logging Form -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <h3 class="card-title mb-4">Log Your Mood</h3>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Mood Level (1-5):</label>
+                    <select name="mood" class="form-select" required>
+                        <option value="1">1 - Very Low</option>
+                        <option value="2">2 - Low</option>
+                        <option value="3">3 - Neutral</option>
+                        <option value="4">4 - High</option>
+                        <option value="5">5 - Very High</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Notes:</label>
+                    <textarea name="notes" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Log Entry</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Entries List -->
+    <div class="card shadow mt-4">
+        <div class="card-body">
+            <h3 class="card-title mb-4">History</h3>
+            <div class="list-group">
+                {% for entry in mood_entries %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ entry.timestamp }}</strong> - 
+                            <span class="badge bg-primary">Mood: {{ entry.mood }}/5</span>
+                        </div>
+                        <form action="{{ url_for('delete_mood', entry_id=entry.id) }}" method="POST">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% if entry.notes %}
+                    <div class="mt-2 alert alert-secondary">
+                        {{ entry.notes }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="list-group-item">
+                    No entries yet. Log your first mood above!
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="card shadow mt-4">
+        <div class="card-body">
+            <h3 class="card-title mb-4">Trends</h3>
+            <canvas id="moodChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('moodChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ dates|safe }},
+                datasets: [{
+                    label: 'Mood Over Time',
+                    data: {{ moods|safe }},
+                    borderColor: '#4bc0c0',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                scales: {
+                    y: { 
+                        min: 1, 
+                        max: 5,
+                        ticks: {
+                            stepSize: 1,
+                            callback: function(value) {
+                                return ['1 - Very Low', '2 - Low', '3 - Mid', '4 - High', '5 - Very High'][value - 1]
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
